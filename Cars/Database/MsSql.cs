@@ -13,7 +13,7 @@ namespace Cars.Database
         string _connectionString;
         SqlConnection _connection;
 
-        MsSql() => _disposed = false;
+        public MsSql() => _disposed = false;
 
         public void SetConnectionString(string connectionString)
         {
