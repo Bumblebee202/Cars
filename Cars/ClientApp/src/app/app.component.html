@@ -1,6 +1,57 @@
 <body>
-  <app-nav-menu></app-nav-menu>
+  <!--<app-nav-menu></app-nav-menu>
   <div class="container">
     <router-outlet></router-outlet>
-  </div>
+  </div>-->
+  <input type="button" value="Добавить" class="btn-primary btn-default" (click)="add()" />
+  <table *ngIf="tableMode; else create" class="table table-striped">
+    <thead>
+      <tr>
+        <td>Name</td>
+        <td>Description</td>
+        <td></td>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let c of cars">
+        <ng-template [ngIf]="car?.id != c.id" [ngIfElse]="edit">
+          <td>{{c?.name}}</td>
+          <td>{{c?.description}}</td>
+          <td>
+            <button class="btn btn-sm btn-primary" (click)="editCar(c)">Изменить</button>
+            <button class="btn btn-sm btn-danger" (click)="delete(c)">Удалить</button>
+          </td>
+        </ng-template>
+      </tr>
+    </tbody>
+  </table>
+
+  <ng-template #edit>
+    <td>
+      <input type="text" [(ngModel)]="car.name" class="form-control" />
+    </td>
+    <td>
+      <input type="text" [(ngModel)]="car.description" class="form-control" />
+    </td>
+    <td>
+      <input type="button" value="Сохранить" (click)="save()" class="btn btn-sm btn-success" />
+      <input type="button" value="Отмена" (click)="cancel()" class="btn btn-sm btn-warning" />
+    </td>
+  </ng-template>
+
+  <ng-template #create>
+    <div class="form-group">
+      <label>Name</label>
+      <input type="text" [(ngModel)]="car.name" class="form-control" />
+    </div>
+    <div class="form-group">
+      <label>Description</label>
+      <input type="text" [(ngModel)]="car.description" class="form-control" />
+    </div>
+    <div>
+      <input type="button" value="Сохранить" (click)="save()" class="btn btn-success" />
+      <input type="button" value="Отмена" (click)="cancel()" class="btn btn-warning" />
+    </div>
+  </ng-template>
+
 </body>
