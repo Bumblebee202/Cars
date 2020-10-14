@@ -1,5 +1,7 @@
 ﻿using Cars.Database;
 using Cars.Models;
+using MongoDB.Bson;
+using MongoDB.Driver;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,125 +11,49 @@ namespace Cars.Adapters
 {
     public class CarAdapter : ICarAdapter
     {
-        IDatabase _database;
+        readonly MongoClient _client;
+        readonly IMongoDatabase _database;
 
-        public CarAdapter(IDatabase database)
+        public CarAdapter()
         {
-            _database = database;
-            _database.SetConnectionString("Server=MSI;Database=Cars;Trusted_Connection=True;");
+            string connectionString = "mongodb://localhost";
+            _client = new MongoClient(connectionString);
+            _database = _client.GetDatabase("Cars");
         }
 
-        public async Task Create(string id, string name, string description)
+        public IMongoCollection<Car> Cars
         {
-            await _database.OpenConnection();
-            ITransaction transaction = _database.BeginTransaction();
-            try
-            {
-                
-                IProcedure procedure = _database.Procedure("CreateCar", transaction)
-                                                .Parameter("ID", id)
-                                                .Parameter("Name", name)
-                                                .Parameter("Description", description);
-
-                await _database.Execute(procedure);
-                await _database.EndTransaction(transaction, false);
-            }
-            catch (Exception)
-            {
-                await _database.EndTransaction(transaction, true);
-                throw;
-            }
-            finally
-            {
-                _database.CloseConnection();
-            }
+            get => _database.GetCollection<Car>("Cars");
         }
 
-        public async Task Delete(string id)
+        public async Task<Car> Create(string name, string description)
         {
-            await _database.OpenConnection();
-            ITransaction transaction = _database.BeginTransaction();
-            try
+            Car car = new Car()
             {
+                Name = name,
+                Description = description
+            };
 
-                IProcedure procedure = _database.Procedure("DeleteCar", transaction)
-                                                .Parameter("ID", id);
-
-                await _database.Execute(procedure);
-                await _database.EndTransaction(transaction, false);
-            }
-            catch (Exception)
-            {
-                await _database.EndTransaction(transaction, true);
-                throw;
-            }
-            finally
-            {
-                _database.CloseConnection();
-            }
+            await Cars.InsertOneAsync(car);
+            return car;
         }
 
-        public async Task<IEnumerable<Car>> Enumerate()
+        public async Task Delete(string id) => await Cars.DeleteOneAsync(c => c.Id.Equals(id));
+
+        public async Task<IEnumerable<Car>> Enumerate() => await Cars.Find(new BsonDocument()).ToListAsync();
+
+        public async Task<Car> Get(string id) => await Cars.Find(new BsonDocument("_id", new ObjectId(id))).FirstOrDefaultAsync();
+
+        public async Task<Car> Update(string id, string name, string description)
         {
-            await _database.OpenConnection();
-            try
+            Car car = new Car
             {
-                IProcedure procedure = _database.Procedure("EnumerateCar");
-                return await _database.Fill<Car>(procedure);
-            }
-            catch (Exception)
-            {
-                throw;
-            }
-            finally
-            {
-                _database.CloseConnection();
-            }
-        }
-
-        public async Task<Car> Get(string id)
-        {
-            await _database.OpenConnection();
-            try
-            {
-                IProcedure procedure = _database.Procedure("EnumerateCar");
-                IEnumerable<Car> cars = await _database.Fill<Car>(procedure);
-                return cars.Single();
-            }
-            catch (Exception)
-            {
-                throw;
-            }
-            finally
-            {
-                _database.CloseConnection();
-            }
-        }
-
-        public async Task Update(string id, string name, string description)
-        {
-            await _database.OpenConnection();
-            ITransaction transaction = _database.BeginTransaction();
-            try
-            {
-
-                IProcedure procedure = _database.Procedure("UpdateCar", transaction)
-                                                .Parameter("ID", id)
-                                                .Parameter("Name", name)
-                                                .Parameter("Description", description);
-
-                await _database.Execute(procedure);
-                await _database.EndTransaction(transaction, false);
-            }
-            catch (Exception)
-            {
-                await _database.EndTransaction(transaction, true);
-                throw;
-            }
-            finally
-            {
-                _database.CloseConnection();
-            }
+                Id = id,
+                Name = name,
+                Description = description
+            };
+            await Cars.ReplaceOneAsync(new BsonDocument("_id", new ObjectId(car.Id)), car);
+            return car;
         }
     }
 }

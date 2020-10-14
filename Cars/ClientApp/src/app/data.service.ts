@@ -21,10 +21,15 @@ export class DataService {
   createCar(car: Car) {
     return this.http.post(this.url, car);
   }
-  updateCar(car: Car) {
 
+  updateCar(car: Car) {
     return this.http.put(this.url, car);
   }
+
+  //partialUpdateCar(car: Car) {
+  //  return this.http.patch(this.url, car);
+  //}
+
   deleteCar(id: string) {
     return this.http.delete(this.url + '/' + id);
   }

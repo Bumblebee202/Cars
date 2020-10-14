@@ -19,40 +19,18 @@ namespace Cars.Managers
 
         public async Task<Car> Get(string id) => await _carAdapter.Get(id);
 
-        public async Task<Car> GetLast()
+        //public async Task<Car> PartialUpdate(string id, string name)
         {
-            IEnumerable<Car> cars = await Enumerate();
-            return cars.LastOrDefault();
+            Car car = await _carAdapter.Get(id);
+            return await _carAdapter.Update(id, name, car.Description);
         }
 
         public async Task<Car> Save(string id, string name, string description)
         {
             if (id == null)
-            {
-                Car car = await GetLast();
-                if (car == null)
-                {
-                    id = "1";
-                }
-                else
-                {
-                    int newId = int.Parse(car.Id);
-                    id = $"{newId + 1}";
-                }
-
-                if (description == null)
-                {
-                    description = "";
-                }
-
-                await _carAdapter.Create(id, name, description);
-                return await GetLast();
-            }
+                return await _carAdapter.Create(name, description);
             else
-            {
-                await _carAdapter.Update(id, name, description);
-                return await _carAdapter.Get(id);
-            }
+               return await _carAdapter.Update(id, name, description);
         }
 
     }
