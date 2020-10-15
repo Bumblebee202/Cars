@@ -19,10 +19,16 @@ namespace Cars.Managers
 
         public async Task<Car> Get(string id) => await _carAdapter.Get(id);
 
-        //public async Task<Car> PartialUpdate(string id, string name)
+        public async Task<Car> UpdateName(string id, string name)
         {
-            Car car = await _carAdapter.Get(id);
-            return await _carAdapter.Update(id, name, car.Description);
+            await _carAdapter.Update<string>(id, "Name", name);
+            return await _carAdapter.Get(id);
+        }
+
+        public async Task<Car> UpdateDescription(string id, string description)
+        {
+            await _carAdapter.Update<string>(id, "Description", description);
+            return await _carAdapter.Get(id);
         }
 
         public async Task<Car> Save(string id, string name, string description)
@@ -30,7 +36,7 @@ namespace Cars.Managers
             if (id == null)
                 return await _carAdapter.Create(name, description);
             else
-               return await _carAdapter.Update(id, name, description);
+                return await _carAdapter.Update(id, name, description);
         }
 
     }

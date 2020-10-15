@@ -49,15 +49,26 @@ namespace Cars.Controllers
             return BadRequest(ModelState);
         }
 
-        //[HttpPatch]
-        //public async Task<IActionResult> PartialUpdate(Car car)
-        //{
-        //    if (ModelState.IsValid)
-        //    {
-        //        car = await _carManager.PartialUpdate(car.Id, car.Name);
-        //        return Ok(car);
-        //    }
-        //    return BadRequest(ModelState);
-        //}
+        [HttpPatch]
+        public async Task<IActionResult> UpdateName(string id, string name)
+        {
+            if (ModelState.IsValid)
+            {
+                Car car = await _carManager.UpdateName(id, name);
+                return Ok(car);
+            }
+            return BadRequest(ModelState);
+        }
+
+        [HttpPatch]
+        public async Task<IActionResult> UpdateDescription(string id, string description)
+        {
+            if (ModelState.IsValid)
+            {
+                Car car = await _carManager.UpdateDescription(id, description);
+                return Ok(car);
+            }
+            return BadRequest(ModelState);
+        }
     }
 }
