@@ -14,11 +14,13 @@
     </thead>
     <tbody>
       <tr *ngFor="let c of cars">
-        <ng-template [ngIf]="car?.id != c.id" [ngIfElse]="edit">
+        <ng-template [ngIf]="car?.id != c.id" [ngIfElse]="getTemplate">
           <td>{{c?.name}}</td>
           <td>{{c?.description}}</td>
           <td>
-            <button class="btn btn-sm btn-primary" (click)="editCar(c)">Изменить</button>
+            <button class="btn btn-sm btn-primary" (click)="editCar(c, 1)">Изменить</button>
+            <button class="btn btn-sm btn-primary" (click)="editCar(c, 2)">Изменить имя</button>
+            <button class="btn btn-sm btn-primary" (click)="editCar(c, 3)">Изменить описание</button>
             <button class="btn btn-sm btn-danger" (click)="delete(c)">Удалить</button>
           </td>
         </ng-template>
@@ -35,6 +37,32 @@
     </td>
     <td>
       <input type="button" value="Сохранить" (click)="save()" class="btn btn-sm btn-success" />
+      <input type="button" value="Отмена" (click)="cancel()" class="btn btn-sm btn-warning" />
+    </td>
+  </ng-template>
+
+  <ng-template #editName>
+    <td>
+      <input type="text" [(ngModel)]="car.name" class="form-control" />
+    </td>
+    <td>
+      {{car?.description}}
+    </td>
+    <td>
+      <input type="button" value="Сохранить" (click)="updateName()" class="btn btn-sm btn-success" />
+      <input type="button" value="Отмена" (click)="cancel()" class="btn btn-sm btn-warning" />
+    </td>
+  </ng-template>
+
+  <ng-template #editDescription>
+    <td>
+      {{car?.name}}
+    </td>
+    <td>
+      <input type="text" [(ngModel)]="car.description" class="form-control" />
+    </td>
+    <td>
+      <input type="button" value="Сохранить" (click)="updateDescription()" class="btn btn-sm btn-success" />
       <input type="button" value="Отмена" (click)="cancel()" class="btn btn-sm btn-warning" />
     </td>
   </ng-template>

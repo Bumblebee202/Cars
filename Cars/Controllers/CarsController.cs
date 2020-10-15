@@ -24,7 +24,7 @@ namespace Cars.Controllers
         public async Task<IActionResult> Delete(string id)
         {
             await _carManager.Delete(id);
-            return Ok(id);
+            return Ok();
         }
 
         [HttpPost]
@@ -49,23 +49,23 @@ namespace Cars.Controllers
             return BadRequest(ModelState);
         }
 
-        [HttpPatch]
-        public async Task<IActionResult> UpdateName(string id, string name)
+        [HttpPatch("{id}/name")]
+        public async Task<IActionResult> UpdateName(string id, [FromBody] CarUpdateModel model)
         {
             if (ModelState.IsValid)
             {
-                Car car = await _carManager.UpdateName(id, name);
+                Car car = await _carManager.UpdateName(id, model.Name);
                 return Ok(car);
             }
             return BadRequest(ModelState);
         }
 
-        [HttpPatch]
-        public async Task<IActionResult> UpdateDescription(string id, string description)
+        [HttpPatch("{id}/description")]
+        public async Task<IActionResult> UpdateDescription(string id, [FromBody] CarUpdateModel model)
         {
             if (ModelState.IsValid)
             {
-                Car car = await _carManager.UpdateDescription(id, description);
+                Car car = await _carManager.UpdateDescription(id, model.Description);
                 return Ok(car);
             }
             return BadRequest(ModelState);

@@ -1,6 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild, TemplateRef } from '@angular/core';
 import { DataService } from './data.service';
 import { Car } from './car';
+import { EditCar } from './EditCar';
 
 @Component({
   selector: 'app-root',
@@ -8,7 +9,11 @@ import { Car } from './car';
   providers: [DataService]
 })
 export class AppComponent {
+  @ViewChild('edit', null) editTemplate: TemplateRef<any>;
+  @ViewChild('editName', null) editNameTemplate: TemplateRef<any>;
+  @ViewChild('editDescription', null) editDescriptionTemplate: TemplateRef<any>;
   car: Car = new Car();
+  edit: EditCar = EditCar.Edit;
   cars: Car[];
   tableMode: boolean = true;
 
@@ -18,6 +23,23 @@ export class AppComponent {
   ngOnInit()
   {
     this.loadCars();
+  }
+
+  get getTemplate()
+  {
+    if (this.edit == EditCar.Edit)
+    {
+      return this.editTemplate;
+    }
+    else if (this.edit == EditCar.EditDescription)
+    {
+      return this.editDescriptionTemplate;
+    }
+    else if (this.edit == EditCar.EditName)
+    {
+      return this.editNameTemplate;
+    }
+
   }
 
   loadCars()
@@ -41,9 +63,24 @@ export class AppComponent {
     this.cancel();
   }
 
-  editCar(car: Car)
+  updateName()
+  {
+    this.dataService.updateName(this.car.id, this.car.name)
+      .subscribe(data => this.loadCars());
+    this.cancel();
+  }
+
+  updateDescription()
+  {
+    this.dataService.updateDescription(this.car.id, this.car.description)
+      .subscribe(data => this.loadCars());
+    this.cancel();
+  }
+
+  editCar(car: Car, edit: EditCar)
   {
     this.car = car;
+    this.edit = edit;
   }
 
   cancel()

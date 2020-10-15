@@ -59,8 +59,7 @@ namespace Cars.Adapters
         public async Task Update<T>(string id, string fieldName, T value)
         {
             IMongoCollection<BsonDocument> collection = _database.GetCollection<BsonDocument>("Cars");
-
-            FilterDefinition<BsonDocument> filter = Builders<BsonDocument>.Filter.Eq("_id", id);
+            FilterDefinition<BsonDocument> filter = Builders<BsonDocument>.Filter.Eq("_id", new ObjectId(id));
             UpdateDefinition<BsonDocument> update = Builders<BsonDocument>.Update.Set(fieldName, value);
             await collection.UpdateOneAsync(filter, update);
         }

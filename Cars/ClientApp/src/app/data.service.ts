@@ -26,9 +26,13 @@ export class DataService {
     return this.http.put(this.url, car);
   }
 
-  //partialUpdateCar(car: Car) {
-  //  return this.http.patch(this.url, car);
-  //}
+  updateName(id: string, name: string) {
+    return this.http.patch(this.url + '/' + id + '/name', { name } );
+  }
+
+  updateDescription(id: string, description: string) {
+    return this.http.patch(this.url + '/' + id + '/description', { description });
+  }
 
   deleteCar(id: string) {
     return this.http.delete(this.url + '/' + id);
